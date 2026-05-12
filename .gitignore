@@ -1,0 +1,39 @@
+# Временные файлы сборки Gradle
+.gradle/
+build/
+/build/
+/*/build/
+
+# Локальные настройки конкретного разработчика (пути к SDK, ключи подписи)
+local.properties
+Signing.properties
+signing.properties
+
+# Кэш компилятора Kotlin
+.kotlin/
+
+# Конфигурация Android Studio / IntelliJ IDEA
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/caches
+.idea/shelf
+*.iml
+
+# Файлы операционной системы и логов
+*.log
+.DS_Store
+Thumbs.db
+
+# Результаты сборки (APK и бэкапы)
+*.apk
+*.ap_
+*.dex
+
+# Специфичные папки Android Studio
+captures/
+.navigation/
+

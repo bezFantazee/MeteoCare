@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "857663605620",
+    "project_id": "meteocare-1b0ad",
+    "storage_bucket": "meteocare-1b0ad.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:857663605620:android:8e7c4c2b5cf6a870213a21",
+        "android_client_info": {
+          "package_name": "com.practicum.mateocare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeWOohNiGS5XzfHu6jOgm3OVZTX4v2GMc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
