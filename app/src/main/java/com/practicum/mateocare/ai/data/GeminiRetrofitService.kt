@@ -10,7 +10,7 @@ class GeminiRetrofitService(
     private val api: GeminiApi
 ) : NetworkClient {
 
-    private val apiKey = "AIzaSyBOJFOr7tdIBxStrY0nVPq_Y28BivxcdgI"
+    private val apiKey = "AQ.Ab8RN6K7I3uYDDKbUrRHWncABCOquZg-0YmF5VxtBKzgX04MRQ"
 
     override suspend fun doRequest(dto: Any): Response {
         return try {

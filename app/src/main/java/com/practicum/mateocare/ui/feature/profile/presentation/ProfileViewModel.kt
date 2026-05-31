@@ -7,21 +7,70 @@ import com.practicum.mateocare.ai.domain.models.GetAiResult
 import com.practicum.mateocare.profile.domain.firebase.ProfileInteractor
 import com.practicum.mateocare.profile.domain.models.HealthProfile
 import com.practicum.mateocare.profile.domain.models.MeteoStatus
+import com.practicum.mateocare.profile.domain.models.UserDailyStatus
 import com.practicum.mateocare.ui.feature.profile.presentation.models.MeteoStatusUi
 import com.practicum.mateocare.ui.feature.profile.presentation.models.ProfileUi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.internal.decodeToSequenceByReader
 
 class ProfileViewModel(
     private val profileInteractor: ProfileInteractor,
     private val aiInteractor: AiInteractor
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow<ProfileScreenUiState>(ProfileScreenUiState.Loading)
-    val uiState: StateFlow<ProfileScreenUiState> = _uiState.asStateFlow()
+    //статус авторизации и базовый профиль пользователя
+    private val _authState = MutableStateFlow<ProfileScreenUiState>(ProfileScreenUiState.Loading)
+    //локальное состояние генерации ai
+    private val _aiSubState = MutableStateFlow<MeteoStatusState?>(null)
+    //история здоровья
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val weeklyHistoryFlow: Flow<List<UserDailyStatus>> = _authState
+        .flatMapLatest { state ->
+            if (state is ProfileScreenUiState.Authorized) {
+                val sevenDaysAgo = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000)
+                profileInteractor.observeUserWeeklyHealth(state.profile.userId, sevenDaysAgo)
+                    .catch { emit(emptyList()) }
+            } else {
+                flowOf(emptyList())
+            }
+        }
+    //единый стейт для compose
+    val uiState: StateFlow<ProfileScreenUiState> = combine(
+        _authState,
+        _aiSubState,
+        weeklyHistoryFlow
+    ) { auth, aiState, history ->
+        if(auth is ProfileScreenUiState.Authorized) {
+            val finalMeteoStatus = when {
+                aiState != null -> aiState
+                auth.meteoStatus is MeteoStatusState.Content -> {
+                    auth.meteoStatus.copy(
+                        userMeteoStatus = auth.meteoStatus.userMeteoStatus.copy(healthHistory = history)
+                    )
+                }
+                else -> auth.meteoStatus
+            }
+            auth.copy(meteoStatus = finalMeteoStatus)
+        } else {
+            auth
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = ProfileScreenUiState.Loading
+    )
 
     // job для подписки на недельную историю статусов пользователя
     private var observeHistoryJob: Job? = null
@@ -36,11 +85,9 @@ class ProfileViewModel(
             val user = profileInteractor.getCurrentUser()
 
             if (user == null) {
-                _uiState.value =
-                    ProfileScreenUiState.Unauthorized.Initial
+               _authState.value = ProfileScreenUiState.Unauthorized.Initial
                 return@launch
             }
-
             loadAuthorizedUser(
                 uid = user.userId,
                 email = user.email
@@ -50,40 +97,36 @@ class ProfileViewModel(
 
     //состояние экрана пользователя
     fun showAuthMenu() {
-        _uiState.update {
+        _authState.update {
             ProfileScreenUiState.Unauthorized.Initial
         }
     }
 
     fun showLoginScreen() {
-        _uiState.update {
+        _authState.update {
             ProfileScreenUiState.Unauthorized.LoginMode
         }
     }
 
     fun showRegisterScreen() {
-        _uiState.update {
+        _authState.update {
             ProfileScreenUiState.Unauthorized.RegisterMode
         }
     }
 
     //функции для работы с сессией пользователя
     fun logout() {
-        _uiState.update {
-            ProfileScreenUiState.Loading
-        }
+        _authState.value = ProfileScreenUiState.Loading
 
         viewModelScope.launch {
             profileInteractor.logout()
 
-            _uiState.update {
-                ProfileScreenUiState.Unauthorized.Initial
-            }
+            _authState.value = ProfileScreenUiState.Unauthorized.Initial
         }
     }
 
     fun registerUser(email: String, password: String, age: Int, gender: String) {
-        _uiState.update { ProfileScreenUiState.Loading }
+        _authState.value = ProfileScreenUiState.Loading
 
         viewModelScope.launch {
             try {
@@ -98,15 +141,13 @@ class ProfileViewModel(
                     email = email
                 )
             } catch(e: Exception) {
-                _uiState.update {
-                    ProfileScreenUiState.Error("Не удалось зарегистрировать пользователя")
-                }
+                _authState.value = ProfileScreenUiState.Error("Не удалось зарегистрировать пользователя")
             }
         }
     }
 
     fun loginUser(email: String, password: String) {
-        _uiState.update { ProfileScreenUiState.Loading }
+        _authState.value = ProfileScreenUiState.Loading
         viewModelScope.launch {
             try {
                 val uid = profileInteractor.loginUser(email, password)
@@ -116,7 +157,7 @@ class ProfileViewModel(
                     email = email
                 )
             } catch(e: Exception) {
-                _uiState.update { ProfileScreenUiState.Error("Ошибка авторизации пользователя") }
+                _authState.value = ProfileScreenUiState.Error("Ошибка авторизации пользователя")
             }
         }
     }
@@ -140,18 +181,16 @@ class ProfileViewModel(
         val userInf = getUserInfo(uid)
 
         if (userInf == null) {
-            _uiState.value =
+            _authState.value =
                 ProfileScreenUiState.Error("Ошибка получения данных пользователя")
             return
         }
 
-        _uiState.value = buildAuthorizedState(
+        _authState.value = buildAuthorizedState(
             uid = uid,
             email = email,
             userInf = userInf
         )
-
-        observeWeeklyHealthHistory()
     }
     private suspend fun getUserInfo(uid: String): HealthProfile? {
         try {
@@ -191,102 +230,38 @@ class ProfileViewModel(
             meteoStatus = meteoStatusState
         )
     }
+    //ai
+    fun generateMeteoStatus(answers: String) {
+        val currentState = _authState.value as? ProfileScreenUiState.Authorized ?: return
 
-    fun observeWeeklyHealthHistory(){
-        observeHistoryJob?.cancel()
-        observeHistoryJob = viewModelScope.launch {
-            val authorizedState =
-                _uiState.value as? ProfileScreenUiState.Authorized
-                    ?: return@launch
+        _aiSubState.value = MeteoStatusState.Loading
 
-            val userId = authorizedState.profile.userId
+        viewModelScope.launch {
+            val result = aiInteractor.getMeteoStatus(currentState.profile.age, answers)
+            when(result){
+                is GetAiResult.Success -> {
+                    profileInteractor.updateUserInf(
+                        currentState.profile.userId,
+                        result.data.meteoStatus,
+                        result.data.advice)
 
-            profileInteractor.observeUserWeeklyHealth(userId)
-                .collect { filteredList ->
-
-                    _uiState.update { state ->
-
-                        if(
-                            state is ProfileScreenUiState.Authorized &&
-                            state.meteoStatus is MeteoStatusState.Content
-                        ) {
-
+                    _authState.update { state ->
+                        if(state is ProfileScreenUiState.Authorized) {
                             state.copy(
-                                meteoStatus = state.meteoStatus.copy(
-                                    userMeteoStatus = state.meteoStatus.userMeteoStatus.copy(
-                                        healthHistory = filteredList
+                                meteoStatus = MeteoStatusState.Content(
+                                    MeteoStatusUi(
+                                        result.data.meteoStatus,
+                                        result.data.advice,
+                                        null
                                     )
                                 )
                             )
-
-                        } else {
-                            state
-                        }
+                        } else state
                     }
+                    _aiSubState.value = null
                 }
-        }
-    }
-
-    //ai
-    fun generateMeteoStatus(answers: String) {
-        val currentState = _uiState.value
-
-        if(currentState is ProfileScreenUiState.Authorized) {
-
-            _uiState.update { state ->
-                if(state is ProfileScreenUiState.Authorized) {
-                    state.copy(
-                        meteoStatus = MeteoStatusState.Loading
-                    )
-                } else {
-                    state
-                }
-            }
-
-            val age = currentState.profile.age
-
-            viewModelScope.launch {
-
-                when(val result = aiInteractor.getMeteoStatus(age, answers)) {
-
-                    is GetAiResult.Success -> {
-                        val meteoStatus = MeteoStatusUi(
-                            meteoStatus = result.data.meteoStatus,
-                            advice = result.data.advice,
-                            healthHistory = null
-                        )
-
-                        updateMeteoStatus(
-                            meteoStatus = result.data.meteoStatus,
-                            advice = result.data.advice
-                        )
-
-                        _uiState.update { state ->
-                            if(state is ProfileScreenUiState.Authorized) {
-                                state.copy(
-                                    meteoStatus = MeteoStatusState.Content(
-                                        meteoStatus
-                                    )
-                                )
-                            } else {
-                                state
-                            }
-                        }
-                    }
-
-                    else -> {
-                        _uiState.update { state ->
-                            if(state is ProfileScreenUiState.Authorized) {
-                                state.copy(
-                                    meteoStatus = MeteoStatusState.Error(
-                                        "Не удалось загрузить совет"
-                                    )
-                                )
-                            } else {
-                                state
-                            }
-                        }
-                    }
+                else -> {
+                    _aiSubState.value = MeteoStatusState.Error("Не удалось загрузить совет")
                 }
             }
         }

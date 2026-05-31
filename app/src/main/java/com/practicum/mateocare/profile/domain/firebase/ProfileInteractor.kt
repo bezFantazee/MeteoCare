@@ -8,19 +8,6 @@ import com.practicum.mateocare.profile.domain.models.UserDailyStatus
 import kotlinx.coroutines.flow.Flow
 
 interface ProfileInteractor {
-    suspend fun deleteUserInf(
-        userId: String,
-        collectionName: String,
-        documentId: String
-    )
-
-    suspend fun <T : Identifiable> getUserInf(
-        userId: String,
-        collectionName: String,
-        clazz: Class<T>,
-        documentId: String
-    ): T?
-
     //регистрация и авторизация пользователя
     suspend fun registerUser(
         email: String,
@@ -53,5 +40,5 @@ interface ProfileInteractor {
         dailyStatus: UserDailyStatus
     )
 
-    fun observeUserWeeklyHealth(userID: String): Flow<List<UserDailyStatus>?>
+    fun observeUserWeeklyHealth(userID: String, filterSinceTimestamp: Long): Flow<List<UserDailyStatus>>
 }

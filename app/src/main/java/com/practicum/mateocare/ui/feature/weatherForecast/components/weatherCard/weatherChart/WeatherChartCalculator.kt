@@ -2,6 +2,7 @@ package com.practicum.mateocare.ui.feature.weatherForecast.components.weatherCar
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.practicum.mateocare.ui.feature.weatherForecast.components.weatherCard.WeatherCardDefaults
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -22,8 +23,8 @@ object WeatherChartCalculator {
 
     fun calculateWidth(
         itemCount: Int,
-        itemWidth: Int = 56,
-        spacing: Int = 24
+        itemWidth: Int = WeatherCardDefaults.chartItemWidth,
+        spacing: Int = WeatherCardDefaults.chartSpacing
     ): Dp {
         val total = itemCount * itemWidth +
                 ((itemCount -1).coerceAtLeast(0) * spacing)

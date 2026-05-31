@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -20,25 +21,30 @@ import com.practicum.mateocare.ui.feature.weatherForecast.presentation.models.Fo
 fun WeatherDetailTable(
     detailItems: List<ForecastDetailsUi>
 ) {
-    LazyRow {
-        items(detailItems) { item ->
+    Row {
+        detailItems.forEach { item ->
             Column(
-                modifier = Modifier.height(WeatherCardDefaults.textItemSize)
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .width(WeatherCardDefaults.pointSpacing)
+                    .height(
+                    WeatherCardDefaults.textItemSize
+                )
             ) {
                 Text(
                     text = item.time,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.primary,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.width(WeatherCardDefaults.textItemSize)
+                    textAlign = TextAlign.Center
                 )
+
                 Spacer(modifier = Modifier.weight(1f))
+
                 Text(
                     text = item.value,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.surface,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.width(WeatherCardDefaults.textItemSize)
+                    textAlign = TextAlign.Center
                 )
             }
         }

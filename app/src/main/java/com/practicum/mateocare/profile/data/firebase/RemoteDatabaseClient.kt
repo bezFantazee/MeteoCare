@@ -1,11 +1,9 @@
 package com.practicum.mateocare.profile.data.firebase
 
-import com.google.firebase.auth.FirebaseUser
 import com.practicum.mateocare.profile.domain.models.Identifiable
-import com.practicum.mateocare.profile.domain.models.User
 import kotlinx.coroutines.flow.Flow
 
-interface FirebaseClient {
+interface RemoteDatabaseClient {
 
     suspend fun <T : Identifiable> save(
         userId: String,
@@ -39,11 +37,4 @@ interface FirebaseClient {
         collectionName: String,
         clazz: Class<T>
     ): Flow<List<T>?>
-
-    //регистрация и авторизация пользователей
-    suspend fun register(email: String, password: String): String
-    suspend fun login(email: String, password: String): String
-    suspend fun logout()
-
-    suspend fun getCurrentUser(): FirebaseUser?
 }

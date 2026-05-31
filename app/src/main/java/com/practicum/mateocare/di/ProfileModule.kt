@@ -1,9 +1,11 @@
 package com.practicum.mateocare.di
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.practicum.mateocare.profile.data.firebase.FirebaseClient
-import com.practicum.mateocare.profile.data.firebase.FirestoreClient
-import com.practicum.mateocare.profile.data.firebase.ProfileRepositoryImpl
+import com.practicum.mateocare.profile.data.firebase.RemoteDatabaseClient
+import com.practicum.mateocare.profile.data.firebase.FirebaseFirestoreClient
+import com.practicum.mateocare.profile.data.ProfileRepositoryImpl
+import com.practicum.mateocare.profile.data.firebase.AuthClient
+import com.practicum.mateocare.profile.data.firebase.FirebaseAuthClient
 import com.practicum.mateocare.profile.domain.firebase.ProfileInteractor
 import com.practicum.mateocare.profile.domain.firebase.ProfileInteractorImpl
 import com.practicum.mateocare.profile.domain.firebase.ProfileRepository
@@ -17,13 +19,16 @@ val profileModule = module {
         FirebaseFirestore.getInstance()
     }
 
-    single<FirebaseClient> {
-        FirestoreClient(get(), "users")
+    single<RemoteDatabaseClient> {
+        FirebaseFirestoreClient(get(), "users")
+    }
+    single<AuthClient> {
+        FirebaseAuthClient()
     }
 
     //repository
     single<ProfileRepository> {
-        ProfileRepositoryImpl(get())
+        ProfileRepositoryImpl(get(), get())
     }
 
     //interactor
