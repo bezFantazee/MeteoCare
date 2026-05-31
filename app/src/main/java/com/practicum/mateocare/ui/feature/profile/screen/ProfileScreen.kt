@@ -9,10 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.remote.creation.dsl.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,10 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.practicum.mateocare.ui.feature.components.state.ErrorMessage
 import com.practicum.mateocare.ui.feature.components.state.LoadingScreen
 import com.practicum.mateocare.ui.feature.profile.presentation.ProfileScreenUiState
-import com.practicum.mateocare.ui.feature.profile.presentation.ProfileState
-import com.practicum.mateocare.ui.feature.profile.presentation.ProfileViewModel
 import com.practicum.mateocare.ui.theme.MeteoCareTheme
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ProfileScreen(
@@ -34,8 +28,7 @@ fun ProfileScreen(
     onRegister: (String, String, Int, String) -> Unit,
     onLogin: (String, String) -> Unit,
     logout: () -> Unit,
-    getMeteoStatus: (String) -> Unit,
-    observeWeekUserStatus: () -> Unit,
+    generateMeteoStatus: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -63,7 +56,7 @@ fun ProfileScreen(
                 ErrorMessage(message = profileState.message)
             }
             is ProfileScreenUiState.Unauthorized -> {
-                UnRegisterUserScreen(
+                UnauthorizedProfileScreen(
                     subState = profileState,
                     onShowLogin = onShowLogin,
                     onShowRegister = onShowRegister,
@@ -74,11 +67,10 @@ fun ProfileScreen(
             }
             is ProfileScreenUiState.Authorized -> {
                 val state = profileState
-                RegisterUserScreen(
+                AuthorizedProfileScreen(
                     profile = state.profile,
                     meteoStatusState = state.meteoStatus,
-                    getMeteoStatus = getMeteoStatus,
-                    observeWeekUserStatus = observeWeekUserStatus,
+                    generateMeteoStatus = generateMeteoStatus,
                     logout = logout
                 )
             }

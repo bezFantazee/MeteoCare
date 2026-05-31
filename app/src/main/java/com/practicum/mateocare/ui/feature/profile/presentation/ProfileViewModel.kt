@@ -27,11 +27,11 @@ class ProfileViewModel(
     private var observeHistoryJob: Job? = null
 
     init{
-        requireUser()
+        initializeUser()
     }
 
     //user
-    private fun requireUser(){
+    private fun initializeUser(){
         viewModelScope.launch {
             val user = profileInteractor.getCurrentUser()
 
@@ -49,19 +49,19 @@ class ProfileViewModel(
     }
 
     //состояние экрана пользователя
-    fun back() {
+    fun showAuthMenu() {
         _uiState.update {
             ProfileScreenUiState.Unauthorized.Initial
         }
     }
 
-    fun showLogin() {
+    fun showLoginScreen() {
         _uiState.update {
             ProfileScreenUiState.Unauthorized.LoginMode
         }
     }
 
-    fun showRegister() {
+    fun showRegisterScreen() {
         _uiState.update {
             ProfileScreenUiState.Unauthorized.RegisterMode
         }
@@ -137,7 +137,7 @@ class ProfileViewModel(
         uid: String,
         email: String
     ) {
-        val userInf = getUserInf(uid)
+        val userInf = getUserInfo(uid)
 
         if (userInf == null) {
             _uiState.value =
@@ -145,27 +145,22 @@ class ProfileViewModel(
             return
         }
 
-        _uiState.value = mapAuthorizedState(
+        _uiState.value = buildAuthorizedState(
             uid = uid,
             email = email,
             userInf = userInf
         )
 
-        observeStatusHistory()
+        observeWeeklyHealthHistory()
     }
-    private suspend fun getUserInf(uid: String): HealthProfile? {
+    private suspend fun getUserInfo(uid: String): HealthProfile? {
         try {
-            return profileInteractor.getUserInf(
-                userId = uid,
-                collectionName = "health_profile",
-                clazz = HealthProfile::class.java,
-                documentId = "main"
-            )
+            return profileInteractor.getHealthProfile(uid)
         } catch(e: Exception) {
             return null
         }
     }
-    private fun mapAuthorizedState(
+    private fun buildAuthorizedState(
         uid: String,
         email: String,
         userInf: HealthProfile
@@ -197,7 +192,7 @@ class ProfileViewModel(
         )
     }
 
-    fun observeStatusHistory(){
+    fun observeWeeklyHealthHistory(){
         observeHistoryJob?.cancel()
         observeHistoryJob = viewModelScope.launch {
             val authorizedState =
@@ -206,7 +201,7 @@ class ProfileViewModel(
 
             val userId = authorizedState.profile.userId
 
-            profileInteractor.observeUserWeeklyStatuses(userId)
+            profileInteractor.observeUserWeeklyHealth(userId)
                 .collect { filteredList ->
 
                     _uiState.update { state ->
@@ -233,7 +228,7 @@ class ProfileViewModel(
     }
 
     //ai
-    fun getMeteoStatus(answers: String) {
+    fun generateMeteoStatus(answers: String) {
         val currentState = _uiState.value
 
         if(currentState is ProfileScreenUiState.Authorized) {

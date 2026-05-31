@@ -137,7 +137,7 @@ class ProfileInteractorImpl(
         )
     }
 
-    override fun observeUserWeeklyStatuses(userID: String): Flow<List<UserDailyStatus>?> {
+    override fun observeUserWeeklyHealth(userID: String): Flow<List<UserDailyStatus>?> {
         return repository.observeAllInf(
             userId = userID,
             collectionName = "daily_status",

@@ -53,5 +53,5 @@ interface ProfileInteractor {
         dailyStatus: UserDailyStatus
     )
 
-    fun observeUserWeeklyStatuses(userID: String): Flow<List<UserDailyStatus>?>
+    fun observeUserWeeklyHealth(userID: String): Flow<List<UserDailyStatus>?>
 }

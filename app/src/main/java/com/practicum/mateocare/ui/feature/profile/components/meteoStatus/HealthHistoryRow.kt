@@ -10,15 +10,14 @@ import androidx.compose.ui.unit.dp
 import com.practicum.mateocare.profile.domain.models.UserDailyStatus
 import com.practicum.mateocare.ui.components.text.BodyText
 import com.practicum.mateocare.ui.feature.components.dailyHealth.DailyHealth
-import com.practicum.mateocare.ui.feature.components.dailyHealth.DailyHealthStatus
 import kotlin.collections.forEach
 
 @Composable
-fun StatusHistoryRow(
-    statusHistory: List<UserDailyStatus>?,
+fun HealthHistoryRow(
+    healthHistory: List<UserDailyStatus>?,
 ) {
 
-    if (statusHistory?.isNotEmpty() == true) {
+    if (healthHistory?.isNotEmpty() == true) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
@@ -27,7 +26,7 @@ fun StatusHistoryRow(
             BodyText(
                 text = "История самочувствия: "
             )
-            statusHistory.forEach { status ->
+            healthHistory.forEach { status ->
                 Log.d("1we3", status.status)
                 DailyHealth(status.status)
             }

@@ -14,14 +14,13 @@ fun ProfileRoute(modifier: Modifier = Modifier) {
 
     ProfileScreen(
         profileState = profileState,
-        onShowLogin = profileViewModel::showLogin,
-        onShowRegister = profileViewModel::showRegister,
-        onBack = profileViewModel::back,
+        onShowLogin = profileViewModel::showLoginScreen,
+        onShowRegister = profileViewModel::showRegisterScreen,
+        onBack = profileViewModel::showAuthMenu,
         onRegister = {email, password, age, gender -> profileViewModel.registerUser(email, password, age, gender) },
         onLogin = {email, password -> profileViewModel.loginUser(email, password)},
         logout = profileViewModel::logout,
-        getMeteoStatus = {answers -> profileViewModel.getMeteoStatus(answers) },
-        observeWeekUserStatus = profileViewModel::observeStatusHistory,
+        generateMeteoStatus = { answers -> profileViewModel.generateMeteoStatus(answers) },
         modifier = modifier
     )
 }

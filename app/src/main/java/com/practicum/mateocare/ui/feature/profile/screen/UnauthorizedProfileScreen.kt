@@ -4,11 +4,10 @@ import androidx.compose.runtime.Composable
 import com.practicum.mateocare.ui.feature.profile.components.auth.LoginForm
 import com.practicum.mateocare.ui.feature.profile.components.auth.RegisterForm
 import com.practicum.mateocare.ui.feature.profile.presentation.ProfileScreenUiState
-import com.practicum.mateocare.ui.feature.profile.presentation.ProfileState
 import com.practicum.mateocare.ui.feature.profile.sections.AuthSection
 
 @Composable
-fun UnRegisterUserScreen(
+fun UnauthorizedProfileScreen(
     subState: ProfileScreenUiState.Unauthorized,
     onShowLogin: () -> Unit,
     onShowRegister: () -> Unit,

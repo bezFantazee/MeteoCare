@@ -16,14 +16,13 @@ import com.practicum.mateocare.ui.feature.profile.sections.UserInfoSection
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun RegisterUserScreen(
+fun AuthorizedProfileScreen(
     profile: ProfileUi,
     meteoStatusState: MeteoStatusState,
-    getMeteoStatus: (String) -> Unit,
-    observeWeekUserStatus: () -> Unit,
+    generateMeteoStatus: (String) -> Unit,
     logout: () -> Unit
 ) {
-    val notViewModel: NotificationViewModel = koinViewModel()
+    val notificationViewModel: NotificationViewModel = koinViewModel()
     val hasMeteoStatus = meteoStatusState is MeteoStatusState.Content
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && hasMeteoStatus) {
@@ -39,7 +38,7 @@ fun RegisterUserScreen(
     }
 
     LaunchedEffect(hasMeteoStatus) {
-        notViewModel.enable(12, 0)
+        notificationViewModel.enable(12, 0)
     }
 
     TitleText(
@@ -50,8 +49,7 @@ fun RegisterUserScreen(
 
     MeteoStatusSection(
         meteoStatusState = meteoStatusState,
-        getMeteoStatus = getMeteoStatus,
-        observeWeekUserStatus = observeWeekUserStatus
+        generateMeteoStatus = generateMeteoStatus
     )
 
     SecondaryButton(

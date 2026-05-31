@@ -14,7 +14,7 @@ import com.practicum.mateocare.ui.feature.components.survey.FullSurvey
 import com.practicum.mateocare.ui.feature.profile.presentation.models.SurveyQuestions
 
 @Composable
-fun EmptyMeteoStatus(
+fun MeteoStatusSurvey(
     onFinishButtonClicked: (Map<Int, String>) -> Unit
 ) {
     //открытие окна с опросом

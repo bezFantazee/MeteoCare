@@ -8,16 +8,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.practicum.mateocare.ui.feature.components.state.LoadingScreen
 import com.practicum.mateocare.ui.feature.profile.components.meteoStatus.AiStatusError
-import com.practicum.mateocare.ui.feature.profile.components.meteoStatus.EmptyMeteoStatus
-import com.practicum.mateocare.ui.feature.profile.components.meteoStatus.MeteoStatus
-import com.practicum.mateocare.ui.feature.profile.components.meteoStatus.StatusHistoryRow
+import com.practicum.mateocare.ui.feature.profile.components.meteoStatus.MeteoStatusSurvey
+import com.practicum.mateocare.ui.feature.profile.components.meteoStatus.MeteoStatusCard
+import com.practicum.mateocare.ui.feature.profile.components.meteoStatus.HealthHistoryRow
 import com.practicum.mateocare.ui.feature.profile.presentation.MeteoStatusState
 
 @Composable
 fun MeteoStatusSection(
     meteoStatusState: MeteoStatusState,
-    getMeteoStatus: (String) -> Unit,
-    observeWeekUserStatus: () -> Unit
+    generateMeteoStatus: (String) -> Unit
 ){
     // Переменная для хранения ответов на случай ошибки
     var lastAnswers by remember { mutableStateOf("") }
@@ -29,7 +28,7 @@ fun MeteoStatusSection(
                 onReapedButtonClicked = {
                     Log.d("12wr", lastAnswers.toString())
                     if (lastAnswers.isNotEmpty()) {
-                        getMeteoStatus(lastAnswers)
+                        generateMeteoStatus(lastAnswers)
                     }
 
                 }
@@ -41,23 +40,22 @@ fun MeteoStatusSection(
         }
 
         is MeteoStatusState.Empty -> {
-            EmptyMeteoStatus(
+            MeteoStatusSurvey(
                 onFinishButtonClicked = { allAnswers ->
                     val finalReport = allAnswers.map { "${it.key}: ${it.value}" }.joinToString("; ")
                     lastAnswers = finalReport
-                    getMeteoStatus(finalReport)
+                    generateMeteoStatus(finalReport)
                 }
             )
         }
 
         is MeteoStatusState.Content -> {
-            MeteoStatus(
+            MeteoStatusCard(
                 meteoStatusType = meteoStatusState.userMeteoStatus.meteoStatus.type,
                 mainAdvice = meteoStatusState.userMeteoStatus.advice
             )
-            observeWeekUserStatus()
 
-            StatusHistoryRow(meteoStatusState.userMeteoStatus.healthHistory)
+            HealthHistoryRow(meteoStatusState.userMeteoStatus.healthHistory)
         }
     }
 }
