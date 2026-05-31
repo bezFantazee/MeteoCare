@@ -15,8 +15,6 @@ import com.practicum.mateocare.ai.prompts.StatusPromptBuilder
 import com.practicum.mateocare.ai.prompts.model.AdviceInput
 import com.practicum.mateocare.ai.prompts.model.StatusInput
 import com.practicum.mateocare.forecast.data.NetworkClient
-import com.practicum.mateocare.forecast.data.api.MeteoApiService
-import com.practicum.mateocare.ui.profile.AiViewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.dsl.viewModelOf
@@ -88,5 +86,5 @@ val aiModule = module {
     }
 
     //viewModel
-    viewModelOf(::AiViewModel)
+    //viewModelOf(::AiViewModel)
 }

@@ -20,7 +20,7 @@ class AiRepositoryImpl(
     private val mapper: AiResponseMapper
 ) : AiRepository {
 
-    override suspend fun generateMeteoAdvice(prompt: String): Flow<GetAiResult> = flow {
+    override suspend fun generateMeteoAdvice(prompt: String): GetAiResult {
 
         try {
 
@@ -44,8 +44,7 @@ class AiRepositoryImpl(
 
                     Log.d("AI_RAW", geminiResponse.toString())
                     if (geminiResponse == null) {
-                        emit(GetAiResult.ServerError)
-                        return@flow
+                        return GetAiResult.ServerError
                     }
 
                     val text = geminiResponse.candidates
@@ -57,32 +56,29 @@ class AiRepositoryImpl(
                     Log.d("AI_RAW", text ?: "null")
 
                     if (text.isNullOrBlank()) {
-                        emit(GetAiResult.NoResults)
-                        return@flow
+                        return GetAiResult.NoResults
                     }
 
                     val result = mapper.toMeteoAdvice(text)
 
-                    emit(
-                        GetAiResult.Success(result)
-                    )
+                    return GetAiResult.Success(result)
                 }
 
                 400, 401 -> {
-                    emit(GetAiResult.NoResults)
+                    return GetAiResult.NoResults
                 }
 
                 -1 -> {
-                    emit(GetAiResult.NetworkError)
+                    return GetAiResult.NetworkError
                 }
 
                 else -> {
-                    emit(GetAiResult.ServerError)
+                    return GetAiResult.ServerError
                 }
             }
 
         } catch (e: Exception) {
-            emit(GetAiResult.ServerError)
+            return GetAiResult.ServerError
         }
     }
 }

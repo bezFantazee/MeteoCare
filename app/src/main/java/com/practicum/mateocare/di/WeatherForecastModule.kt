@@ -8,7 +8,8 @@ import com.practicum.mateocare.forecast.data.api.MeteoApiService
 import com.practicum.mateocare.forecast.domain.GetWeatherForecastInteractor
 import com.practicum.mateocare.forecast.domain.GetWeatherForecastInteractorImpl
 import com.practicum.mateocare.forecast.domain.GetWeatherForecastRepository
-import com.practicum.mateocare.ui.forecast.WeatherForecastViewModel
+import com.practicum.mateocare.ui.feature.weatherForecast.presentation.WeatherForecastScreenViewModel
+import com.practicum.mateocare.ui.feature.weatherForecast.presentation.mappers.ForecastUiMapper
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -42,5 +43,9 @@ val weatherForecastModule = module {
     }
 
     //viewModel
-    viewModelOf(::WeatherForecastViewModel)
+    single {
+        ForecastUiMapper()
+    }
+
+    viewModelOf(::WeatherForecastScreenViewModel)
 }

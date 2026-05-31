@@ -1,25 +1,17 @@
 package com.practicum.mateocare.profile.domain.firebase
 
+import com.practicum.mateocare.profile.domain.models.HealthProfile
 import com.practicum.mateocare.profile.domain.models.Identifiable
+import com.practicum.mateocare.profile.domain.models.MeteoStatus
 import com.practicum.mateocare.profile.domain.models.User
+import com.practicum.mateocare.profile.domain.models.UserDailyStatus
+import kotlinx.coroutines.flow.Flow
 
 interface ProfileInteractor {
-    suspend fun <T : Identifiable> saveUserInf(
-        userId: String,
-        collectionName: String,
-        data: T,
-        documentId: String? = null
-    )
     suspend fun deleteUserInf(
         userId: String,
         collectionName: String,
         documentId: String
-    )
-    suspend fun updateUserInf(
-        userId: String,
-        collectionName: String,
-        documentId: String,
-        updates: Map<String, Any>
     )
 
     suspend fun <T : Identifiable> getUserInf(
@@ -29,15 +21,37 @@ interface ProfileInteractor {
         documentId: String
     ): T?
 
-    suspend fun <T : Identifiable> getAllInf(
-        userId: String,
-        collectionName: String,
-        clazz: Class<T>
-    ): List<T>?
-
     //регистрация и авторизация пользователя
-    suspend fun registerUser(email: String, password: String): String
+    suspend fun registerUser(
+        email: String,
+        password: String,
+        age: Int,
+        gender: String
+    ): String
     suspend fun loginUser(email: String, password: String): String
     suspend fun logout()
     suspend fun getCurrentUser(): User?
+
+    //user data
+    suspend fun updateUserInf(
+        uid: String,
+        meteoStatus: MeteoStatus,
+        mainAdvice: String)
+
+    //обновленные функции
+    suspend fun getHealthProfile(
+        userId: String
+    ): HealthProfile?
+
+    suspend fun getUserDailyStatus(
+        userId: String,
+        date: String
+    ): UserDailyStatus?
+
+    suspend fun saveUserDailyStatus(
+        userId: String,
+        dailyStatus: UserDailyStatus
+    )
+
+    fun observeUserWeeklyStatuses(userID: String): Flow<List<UserDailyStatus>?>
 }

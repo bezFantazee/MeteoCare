@@ -3,6 +3,7 @@ package com.practicum.mateocare.profile.data.firebase
 import com.practicum.mateocare.profile.domain.firebase.ProfileRepository
 import com.practicum.mateocare.profile.domain.models.Identifiable
 import com.practicum.mateocare.profile.domain.models.User
+import kotlinx.coroutines.flow.Flow
 
 class ProfileRepositoryImpl(
     private val dbClient: FirebaseClient
@@ -42,12 +43,12 @@ class ProfileRepositoryImpl(
         return dbClient.getDocumentSafe(userId, collectionName, clazz, documentId)
     }
 
-    override suspend fun <T : Identifiable> getAllInf(
+    override fun <T : Identifiable> observeAllInf(
         userId: String,
         collectionName: String,
         clazz: Class<T>
-    ): List<T>? {
-        return dbClient.getDocumentsSafe(userId, collectionName, clazz)
+    ): Flow<List<T>?> {
+        return dbClient.observeDocumentsSafe(userId, collectionName, clazz)
     }
 
     override suspend fun registerUser(

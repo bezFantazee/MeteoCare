@@ -3,6 +3,7 @@ package com.practicum.mateocare.profile.data.firebase
 import com.google.firebase.auth.FirebaseUser
 import com.practicum.mateocare.profile.domain.models.Identifiable
 import com.practicum.mateocare.profile.domain.models.User
+import kotlinx.coroutines.flow.Flow
 
 interface FirebaseClient {
 
@@ -33,11 +34,11 @@ interface FirebaseClient {
         documentId: String
     ) : T?
 
-    suspend fun <T : Identifiable> getDocumentsSafe(
+    fun <T : Identifiable> observeDocumentsSafe(
         userId: String,
         collectionName: String,
         clazz: Class<T>
-    ): List<T>?
+    ): Flow<List<T>?>
 
     //регистрация и авторизация пользователей
     suspend fun register(email: String, password: String): String

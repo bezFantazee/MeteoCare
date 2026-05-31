@@ -1,10 +1,15 @@
 package com.practicum.mateocare.profile.data.firebase
 
+import androidx.compose.runtime.snapshotFlow
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestoreSettings
 import com.practicum.mateocare.profile.domain.models.Identifiable
 import com.practicum.mateocare.profile.domain.models.User
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 class FirestoreClient(
@@ -81,24 +86,34 @@ class FirestoreClient(
         }
     }
 
-    override suspend fun <T : Identifiable> getDocumentsSafe(
+    override fun <T : Identifiable> observeDocumentsSafe(
         userId: String,
         collectionName: String,
         clazz: Class<T>
-    ): List<T>? {
-        return try {
-            val snapshot = db.collection(mainCollectionName)
-                .document(userId)
-                .collection(collectionName)
-                .get()
-                .await()
+    ): Flow<List<T>> = callbackFlow {
+        val listener = db
+            .collection(mainCollectionName)
+            .document(userId)
+            .collection(collectionName)
+            .addSnapshotListener { snapshot, error ->
+                if(error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
 
-            snapshot.documents.mapNotNull { doc ->
-                val item = doc.toObject(clazz)
-                item?.withId(doc.id) as? T
+                val statuses = snapshot?.documents
+                    ?.mapNotNull {
+                        it.toObject(
+                            clazz
+                        )
+                    }
+                    ?: emptyList()
+
+                trySend(statuses)
             }
-        } catch (e: Exception) {
-            null
+
+        awaitClose {
+            listener.remove()
         }
     }
 

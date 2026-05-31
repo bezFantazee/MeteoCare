@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 
     id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -94,6 +95,12 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.0")
     implementation("androidx.core:core-ktx:1.13.1")
 
+    //type-safe serialisable
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    //map
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.22")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -108,6 +115,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.compose.foundation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

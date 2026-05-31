@@ -21,6 +21,9 @@ class AdvicePromptBuilder : PromptBuilder<AdviceInput> {
     "level": "low | medium | high",
     "score": 0
   },
+  
+  "dailyStatus": "low | medium | hight"
+  
   "advice": ""
 }
 
@@ -28,6 +31,7 @@ class AdvicePromptBuilder : PromptBuilder<AdviceInput> {
 - отвечай ТОЛЬКО на русском языке
 - все текстовые поля (type, advice) на русском
 - level строго: low | medium | high
+- dailyStatus строго: low | medium | high, содержит оценку сегодняшнего состояния пользователя
 
 ПОЛЬЗОВАТЕЛЬ:
 Возраст: ${input.age}

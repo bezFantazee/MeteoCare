@@ -8,6 +8,6 @@ import com.practicum.mateocare.profile.domain.models.MeteoStatus
 import kotlinx.coroutines.flow.Flow
 
 interface AiInteractor {
-    suspend fun getAdvice(age: Int, meteoStatus: MeteoStatus, forecast: WeatherForecast, answers: String): Flow<GetAiResult>
-    suspend fun getMeteoStatus(age: Int, answers: String): Flow<GetAiResult>
+    suspend fun getAdvice(age: Int, meteoStatus: MeteoStatus, forecast: WeatherForecast, answers: String): GetAiResult
+    suspend fun getMeteoStatus(age: Int, answers: String): GetAiResult
 }

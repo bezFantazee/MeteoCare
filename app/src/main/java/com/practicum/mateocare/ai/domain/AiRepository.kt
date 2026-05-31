@@ -6,5 +6,5 @@ import com.practicum.mateocare.profile.domain.models.MeteoStatus
 import kotlinx.coroutines.flow.Flow
 
 interface AiRepository {
-    suspend fun generateMeteoAdvice(prompt: String): Flow<GetAiResult>
+    suspend fun generateMeteoAdvice(prompt: String): GetAiResult
 }

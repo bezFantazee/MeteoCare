@@ -6,9 +6,9 @@ import com.practicum.mateocare.ai.domain.models.MeteoAdviceResult
 class AiResponseMapper {
     fun toMeteoAdvice(raw: String): MeteoAdviceResult {
 
-        val чистыйJson = extractJson(raw)
+        val fullJson = extractJson(raw)
 
-        return Gson().fromJson(чистыйJson, MeteoAdviceResult::class.java)
+        return Gson().fromJson(fullJson, MeteoAdviceResult::class.java)
     }
 
     private fun extractJson(text: String): String {
