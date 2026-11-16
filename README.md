@@ -8,7 +8,7 @@ Android-приложение для отслеживания погодных у
 <p align="center">
   <img src="screenshots/forecast_screen.png" width="200" alt="Экран прогноза погоды" />
   <img src="screenshots/profile_screen.png" width="200" alt="Профиль пользователя" />
-  <img src="screenshots/ai_advice_screen.png" width="200" alt="Рекомендации AI" />
+  <img src="screenshots/daily_quiz.png" width="200" alt="Рекомендации AI" />
 </p>
 
 ## Основные возможности
