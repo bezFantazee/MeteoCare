@@ -1,4 +1,4 @@
-package com.practicum.mateocare.ui.components.appBar
+package com.practicum.mateocare.ui.components.appBars
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme

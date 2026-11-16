@@ -1,6 +1,6 @@
 package com.practicum.mateocare.ui.feature.weatherForecast.components.weatherCard.weatherChart
 
-import com.practicum.mateocare.ui.components.chart.ChartModel
+import com.practicum.mateocare.ui.components.charts.ChartModel
 import com.practicum.mateocare.ui.feature.weatherForecast.presentation.models.ForecastDetailsUi
 
 object WeatherChartMapper {

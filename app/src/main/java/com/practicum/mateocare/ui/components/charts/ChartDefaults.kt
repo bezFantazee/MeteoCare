@@ -1,4 +1,4 @@
-package com.practicum.mateocare.ui.components.chart
+package com.practicum.mateocare.ui.components.charts
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.MaterialTheme

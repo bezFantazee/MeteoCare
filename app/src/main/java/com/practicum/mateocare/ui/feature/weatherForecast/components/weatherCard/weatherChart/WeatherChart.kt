@@ -12,8 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import com.practicum.mateocare.ui.components.chart.PrimaryChart
+import com.practicum.mateocare.ui.components.charts.PrimaryChart
 import com.practicum.mateocare.ui.feature.components.state.ErrorMessage
 import com.practicum.mateocare.ui.feature.weatherForecast.components.weatherCard.WeatherCardDefaults
 import com.practicum.mateocare.ui.feature.weatherForecast.presentation.models.ForecastDetailsUi

@@ -1,4 +1,4 @@
-package com.practicum.mateocare.ui.components.chart
+package com.practicum.mateocare.ui.components.charts
 
 data class ChartModel(
     val values: List<Float>,

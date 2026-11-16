@@ -1,6 +1,8 @@
 package com.practicum.mateocare
 
 import android.app.Application
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.practicum.mateocare.di.aiModule
 import com.practicum.mateocare.di.dailyAdviceModule
 import com.practicum.mateocare.di.locationModule
@@ -13,6 +15,7 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 
 class App : Application() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate() {
         super.onCreate()
 
@@ -24,7 +27,6 @@ class App : Application() {
                 locationModule,
                 profileModule,
                 aiModule,
-                //sharedModule,
                 notificationModule,
                 dailyAdviceModule
             )

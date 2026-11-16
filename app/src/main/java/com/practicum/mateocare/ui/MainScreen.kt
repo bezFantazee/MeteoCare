@@ -10,11 +10,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.practicum.mateocare.ui.components.appBar.MeteoBottomBar
-import com.practicum.mateocare.ui.components.appBar.TopBar
+import com.practicum.mateocare.ui.components.appBars.MeteoBottomBar
+import com.practicum.mateocare.ui.components.appBars.TopBar
 import com.practicum.mateocare.ui.navigation.MeteoNavGraph
 import com.practicum.mateocare.ui.navigation.NavRoute
-import org.koin.androidx.compose.koinViewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 
 @Composable
@@ -25,8 +24,6 @@ fun MainScreen() {
         backStackEntry?.destination?.hasRoute<NavRoute.Profile>() == true -> NavRoute.Profile
         else -> NavRoute.Forecast
     }
-
-    //val sharedVM: SharedSurveyViewModel = koinViewModel()
 
     Scaffold(
         topBar = { TopBar() },
